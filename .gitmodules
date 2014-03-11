@@ -1,0 +1,3 @@
+[submodule "pokemon_save_parser"]
+	path = pokemon_save_parser
+	url = git://github.com/mplewis/pokemon-save-parser
