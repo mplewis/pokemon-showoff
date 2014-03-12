@@ -18,3 +18,9 @@ def test_index():
     s = client()
     r = s.get('/')
     r.status_code.should.equal(200)
+
+
+def test_post():
+    s = client()
+    r = s.post('/')
+    r.status_code.should.equal(500)
