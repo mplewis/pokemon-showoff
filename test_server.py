@@ -2,11 +2,15 @@ import pytest
 import sure  # noqa
 
 
+class FlaskTestConfig:
+    DEBUG = False
+    TESTING = True
+
+
 @pytest.fixture
 def client():
     import server
-    server.app.config['DEBUG'] = False
-    server.app.config['TESTING'] = True
+    server.app.config.from_object(FlaskTestConfig)
     return server.app.test_client()
 
 
