@@ -1,4 +1,6 @@
-from flask import Flask, render_template, abort
+from utils import unmulti
+
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
@@ -10,7 +12,10 @@ def index():
 
 @app.route('/', methods=['POST'])
 def upload_save():
-    return abort(500)
+    uploaded = unmulti(request.files)
+    if len(uploaded) != 1:
+        return 'Expected 1 file, received %s files.' % len(uploaded), 400
+    return 'OK'
 
 
 if __name__ == '__main__':
