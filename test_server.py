@@ -33,7 +33,7 @@ def test_post_one():
     with open('test_save.sav', 'rb') as f:
         data = {'save': (f, 'tpp.sav')}
         r = s.post('/', data=data)
-    #r.status_code.should.equal(200)
+    r.status_code.should.equal(200)
     r.data.should.equal('RED')
 
 
