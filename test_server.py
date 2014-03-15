@@ -30,10 +30,19 @@ def test_post_none():
 
 def test_post_one():
     s = client()
-    data = {'upload_var': (StringIO('some save file'), 'pkmn.sav')}
+    with open('test_save.sav', 'rb') as f:
+        data = {'save': (f, 'tpp.sav')}
+        r = s.post('/', data=data)
+    #r.status_code.should.equal(200)
+    r.data.should.equal('RED')
+
+
+def test_post_one_malformed():
+    s = client()
+    data = {'save': (StringIO('not a save file'), 'tpp.sav')}
     r = s.post('/', data=data)
-    r.status_code.should.equal(200)
-    r.data.should.equal('OK')
+    r.status_code.should.equal(400)
+    r.data.should.equal('Could not parse save file')
 
 
 def test_post_two():
