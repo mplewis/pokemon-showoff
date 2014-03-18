@@ -1,9 +1,8 @@
-from utils import unmulti
 from pokemon_save_parser.save_parser import SaveDataGen1
 
-from flask import Flask, render_template, request
-
-app = Flask(__name__)
+from flask import render_template, request
+from app import app
+from utils import unmulti
 
 
 @app.route('/', methods=['GET'])
@@ -24,9 +23,3 @@ def upload_save():
     except Exception:
         return 'Could not parse save file', 400
     return save.trainer_name
-
-
-if __name__ == '__main__':
-    import config
-    app.config.from_object(config.FlaskConfig)
-    app.run()

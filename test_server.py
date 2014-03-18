@@ -10,9 +10,10 @@ class FlaskTestConfig:
 
 @pytest.fixture
 def client():
-    import server
-    server.app.config.from_object(FlaskTestConfig)
-    return server.app.test_client()
+    from app import app, config_app
+    from views import index, upload_save  # noqa
+    config_app(flask_config=FlaskTestConfig)
+    return app.test_client()
 
 
 def test_index():
