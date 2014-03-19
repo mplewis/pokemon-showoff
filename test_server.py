@@ -1,11 +1,32 @@
 import pytest
 import sure  # noqa
+import hashlib
+import zlib
 from StringIO import StringIO
+from bson.binary import Binary
 
 
 class FlaskTestConfig:
     DEBUG = False
     TESTING = True
+
+
+class FakeMongoColl:
+    def __init__(self):
+        self.storage = {}
+
+    def insert(self, item):
+        self.last_inserted = item
+        pass
+
+    def find(self, query):
+        self.last_find_query = query
+        return FakeMongoFindResults()
+
+
+class FakeMongoFindResults:
+    def count(self):
+        return 0
 
 
 @pytest.fixture
@@ -14,6 +35,14 @@ def client():
     from views import index, upload_save  # noqa
     config_app(flask_config=FlaskTestConfig)
     return app.test_client()
+
+
+@pytest.fixture
+def client_and_app():
+    from app import app, config_app
+    from views import index, upload_save  # noqa
+    config_app(flask_config=FlaskTestConfig)
+    return (app.test_client(), app)
 
 
 def test_index():
@@ -30,12 +59,38 @@ def test_post_none():
 
 
 def test_post_one():
-    s = client()
+    s, app = client_and_app()
+
+    restore = False
+    if hasattr(app, 'mongo_coll'):
+        restore = True
+        old_coll = app.mongo_coll
+
+    fake_coll = FakeMongoColl()
+    app.mongo_coll = fake_coll
+
+    with open('test_save.sav', 'rb') as f:
+        raw_data = f.read()
+
+    hasher = hashlib.md5()
+    hasher.update(raw_data)
+    md5 = hasher.hexdigest()
+
+    compressed = zlib.compress(raw_data)
+
     with open('test_save.sav', 'rb') as f:
         data = {'save': (f, 'tpp.sav')}
         r = s.post('/', data=data)
+
+    stored = {'md5': md5, 'save_data_zlib': Binary(compressed)}
+
+    r.data.should.equal(md5)
     r.status_code.should.equal(200)
-    r.data.should.equal('RED')
+    fake_coll.last_find_query.should.equal({'md5': md5})
+    fake_coll.last_inserted.should.equal(stored)
+
+    if restore:
+        app.mongo_coll = old_coll
 
 
 def test_post_one_malformed():
