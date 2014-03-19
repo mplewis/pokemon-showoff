@@ -35,7 +35,6 @@ def upload_save():
     compressed = zlib.compress(upload_data)
 
     if app.mongo_coll.find({'md5': md5}).count() > 0:
-        return app.mongo_coll.find({'md5': md5}).count()
         return 'Save file already exists', 400
 
     storable = {'md5': md5, 'save_data_zlib': Binary(compressed)}

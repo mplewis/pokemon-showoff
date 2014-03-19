@@ -12,8 +12,9 @@ class FlaskTestConfig:
 
 
 class FakeMongoColl:
-    def __init__(self):
+    def __init__(self, num_results):
         self.storage = {}
+        self.num_results = num_results
 
     def insert(self, item):
         self.last_inserted = item
@@ -21,12 +22,15 @@ class FakeMongoColl:
 
     def find(self, query):
         self.last_find_query = query
-        return FakeMongoFindResults()
+        return FakeMongoFindResults(self.num_results)
 
 
 class FakeMongoFindResults:
+    def __init__(self, num_results):
+        self.num_results = num_results
+
     def count(self):
-        return 0
+        return self.num_results
 
 
 @pytest.fixture
@@ -66,7 +70,7 @@ def test_post_one():
         restore = True
         old_coll = app.mongo_coll
 
-    fake_coll = FakeMongoColl()
+    fake_coll = FakeMongoColl(0)
     app.mongo_coll = fake_coll
 
     with open('test_save.sav', 'rb') as f:
@@ -88,6 +92,36 @@ def test_post_one():
     r.status_code.should.equal(200)
     fake_coll.last_find_query.should.equal({'md5': md5})
     fake_coll.last_inserted.should.equal(stored)
+
+    if restore:
+        app.mongo_coll = old_coll
+
+
+def test_post_one_exists():
+    s, app = client_and_app()
+
+    restore = False
+    if hasattr(app, 'mongo_coll'):
+        restore = True
+        old_coll = app.mongo_coll
+
+    fake_coll = FakeMongoColl(1)
+    app.mongo_coll = fake_coll
+
+    with open('test_save.sav', 'rb') as f:
+        raw_data = f.read()
+
+    hasher = hashlib.md5()
+    hasher.update(raw_data)
+    md5 = hasher.hexdigest()
+
+    with open('test_save.sav', 'rb') as f:
+        data = {'save': (f, 'tpp.sav')}
+        r = s.post('/', data=data)
+
+    r.data.should.equal('Save file already exists')
+    r.status_code.should.equal(400)
+    fake_coll.last_find_query.should.equal({'md5': md5})
 
     if restore:
         app.mongo_coll = old_coll
