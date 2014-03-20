@@ -48,3 +48,16 @@ def upload_save():
     app.mongo_coll.insert(storable)
 
     return redirect('/' + stored_shortcode)
+
+
+@app.route('/<shortcode>', methods=['GET'])
+def show_team(shortcode):
+    existing = app.mongo_coll.find({'shortcode': shortcode})
+    if existing.count() == 0:
+        return 'No team found with shortcode %s' % shortcode, 404
+
+    save_data_compressed = existing[0]['save_data_zlib']
+    save_data = zlib.decompress(save_data_compressed)
+    save = SaveDataGen1(save_data)
+
+    return 'Trainer name: %s' % save.trainer_name

@@ -185,6 +185,23 @@ def test_post_two():
     r.data.should.equal('Expected 1 file, received 2 files.')
 
 
+def test_get_team():
+    s, app = client_and_app()
+
+    with open('test_save.sav', 'rb') as f:
+        save_data_zlib = zlib.compress(f.read())
+    fake_data = {'md5': 'd41d8cd98f00b204e9800998ecf8427e',
+                 'shortcode': 'some_shortcode',
+                 'save_data_zlib': save_data_zlib}
+    fake_coll = FakeMongoCollWithData([fake_data])
+    app.mongo_coll = fake_coll
+
+    r = s.get('/' + fake_data['shortcode'])
+
+    r.status_code.should.equal(200)
+    r.data.should.equal('Trainer name: RED')
+
+
 def test_shortcode():
     vowels = 'aeiou'
     consonants = 'bcdfghjklmnpqrstvwxyz'
