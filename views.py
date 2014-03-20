@@ -1,7 +1,6 @@
 from pokemon_save_parser.save_parser import SaveDataGen1
 from utils import unmulti, shortcode
 from app import app
-from config import MiscConfig
 
 import zlib
 import hashlib
@@ -38,7 +37,8 @@ def upload_save():
     if app.mongo_coll.find({'md5': md5}).count() > 0:
         return 'Save file already exists', 400
 
-    storable = {'md5': md5, 'shortcode': shortcode(MiscConfig.SHORTCODE_LEN),
+    storable = {'md5': md5,
+                'shortcode': shortcode(app.misc_config.SHORTCODE_LEN),
                 'save_data_zlib': Binary(compressed)}
     app.mongo_coll.insert(storable)
 
