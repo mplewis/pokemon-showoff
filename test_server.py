@@ -1,3 +1,4 @@
+from config import MiscConfig
 from utils import shortcode
 
 import pytest
@@ -98,6 +99,7 @@ def test_post_one():
     (inserted.should.have.key('save_data_zlib')
      .with_value.being.equal(stored['save_data_zlib']))
     inserted.should.have.key('shortcode')
+    inserted['shortcode'].should.have.length_of(MiscConfig.SHORTCODE_LEN)
 
     if restore:
         app.mongo_coll = old_coll
@@ -154,13 +156,13 @@ def test_shortcode():
     vowels = 'aeiou'
     consonants = 'bcdfghjklmnpqrstvexyz'
     c = shortcode(length=10)
-    len(c).should.equal(10)
+    c.should.have.length_of(10)
     for letter in c[::2]:
         letter.should.be.within(consonants)
     for letter in c[1::2]:
         letter.should.be.within(vowels)
     d = shortcode(start_with_vowel=True)
-    len(d).should.equal(12)
+    d.should.have.length_of(12)
     for letter in d[::2]:
         letter.should.be.within(vowels)
     for letter in d[1::2]:

@@ -6,6 +6,7 @@ from flask import render_template, request
 from app import app
 from utils import unmulti, shortcode
 from bson.binary import Binary
+from config import MiscConfig
 
 
 @app.route('/', methods=['GET'])
@@ -37,7 +38,7 @@ def upload_save():
     if app.mongo_coll.find({'md5': md5}).count() > 0:
         return 'Save file already exists', 400
 
-    storable = {'md5': md5, 'shortcode': shortcode(12),
+    storable = {'md5': md5, 'shortcode': shortcode(MiscConfig.SHORTCODE_LEN),
                 'save_data_zlib': Binary(compressed)}
     app.mongo_coll.insert(storable)
 

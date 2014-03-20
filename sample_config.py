@@ -7,3 +7,7 @@ class MongoDbConfig:
 class FlaskConfig:
     DEBUG = False
     SERVER_NAME = 'localhost:5000'
+
+
+class MiscConfig:
+    SHORTCODE_LEN = 12
