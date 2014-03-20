@@ -1,12 +1,12 @@
 from pokemon_save_parser.save_parser import SaveDataGen1
+from utils import unmulti, shortcode
+from app import app
+from config import MiscConfig
 
 import zlib
 import hashlib
 from flask import render_template, request
-from app import app
-from utils import unmulti, shortcode
 from bson.binary import Binary
-from config import MiscConfig
 
 
 @app.route('/', methods=['GET'])
