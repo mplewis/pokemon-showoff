@@ -66,16 +66,9 @@ class FakeMongoFindResultsWithData:
         return self.results[pos]
 
 
-@pytest.fixture
 def client():
     config_app(flask_config=FlaskTestConfig, misc_config=MiscConfig)
     return app.test_client()
-
-
-@pytest.fixture
-def client_and_app():
-    config_app(flask_config=FlaskTestConfig, misc_config=MiscConfig)
-    return (app.test_client(), app)
 
 
 def test_index():
@@ -92,7 +85,7 @@ def test_post_none():
 
 
 def test_post_one():
-    s, app = client_and_app()
+    s = client()
 
     restore = False
     if hasattr(app, 'mongo_coll'):
@@ -139,7 +132,7 @@ def test_post_one():
 
 
 def test_post_one_exists():
-    s, app = client_and_app()
+    s = client()
 
     fake_data = {'md5': 'd41d8cd98f00b204e9800998ecf8427e',
                  'shortcode': 'some_shortcode',
@@ -186,7 +179,7 @@ def test_post_two():
 
 
 def test_get_team():
-    s, app = client_and_app()
+    s = client()
 
     with open('test_save.sav', 'rb') as f:
         save_data_zlib = zlib.compress(f.read())
