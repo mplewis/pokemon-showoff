@@ -4,3 +4,6 @@ before_script: mkdir -p shippable/codecoverage shippable/testresults
 install: pip install -r requirements.txt -r requirements_test.txt
 script: py.test test_server.py --junitxml=shippable/testresults/nosetests.xml --cov views --cov-report xml
 after_success: mv coverage.xml shippable/codecoverage/coverage.xml
+email:
+  on_success: change
+  on_failure: change
