@@ -24,6 +24,6 @@ def shortcode(length=12, start_with_vowel=False):
             code += choice(vowels)
         else:
             code += choice(consonants)
-        vowel = ~vowel
+        vowel = not(vowel)
         length -= 1
     return code

@@ -150,8 +150,14 @@ def test_shortcode():
     vowels = 'aeiou'
     consonants = 'bcdfghjklmnpqrstvexyz'
     c = shortcode(length=10)
-    print c
+    len(c).should.equal(10)
     for letter in c[::2]:
         letter.should.be.within(consonants)
     for letter in c[1::2]:
         letter.should.be.within(vowels)
+    d = shortcode(start_with_vowel=True)
+    len(d).should.equal(12)
+    for letter in d[::2]:
+        letter.should.be.within(vowels)
+    for letter in d[1::2]:
+        letter.should.be.within(consonants)
