@@ -14,6 +14,10 @@ class FlaskTestConfig:
     TESTING = True
 
 
+class MiscConfig:
+    SHORTCODE_LEN = 12
+
+
 class FakeMongoColl:
     def __init__(self, num_results):
         self.storage = {}
@@ -40,7 +44,7 @@ class FakeMongoFindResults:
 def client():
     from app import app, config_app
     from views import index, upload_save  # noqa
-    config_app(flask_config=FlaskTestConfig)
+    config_app(flask_config=FlaskTestConfig, misc_config=MiscConfig)
     return app.test_client()
 
 
@@ -48,7 +52,7 @@ def client():
 def client_and_app():
     from app import app, config_app
     from views import index, upload_save  # noqa
-    config_app(flask_config=FlaskTestConfig)
+    config_app(flask_config=FlaskTestConfig, misc_config=MiscConfig)
     return (app.test_client(), app)
 
 

@@ -5,7 +5,8 @@ from pymongo import MongoClient
 app = Flask(__name__)
 
 
-def config_app(flask_config=None, mongo_db_config=None, mongo_coll_obj=None):
+def config_app(flask_config=None, mongo_db_config=None, mongo_coll_obj=None,
+               misc_config=None):
     if flask_config:
         app.config.from_object(flask_config)
 
@@ -18,3 +19,6 @@ def config_app(flask_config=None, mongo_db_config=None, mongo_coll_obj=None):
         app.mongo_coll = app.mongo_db[mongo_db_config.coll]
     elif mongo_coll_obj:
         app.mongo_coll = mongo_coll_obj
+
+    if misc_config:
+        app.misc_config = misc_config
