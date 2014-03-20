@@ -1,4 +1,3 @@
-from config import MiscConfig
 from utils import shortcode
 
 import pytest
