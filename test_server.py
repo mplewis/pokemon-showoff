@@ -66,26 +66,26 @@ class FakeMongoFindResultsWithData:
         return self.results[pos]
 
 
-def client():
+def fresh_client():
     config_app(flask_config=FlaskTestConfig, misc_config=MiscConfig)
     return app.test_client()
 
 
 def test_index():
-    s = client()
+    s = fresh_client()
     r = s.get('/')
     r.status_code.should.equal(200)
 
 
 def test_post_none():
-    s = client()
+    s = fresh_client()
     r = s.post('/')
     r.status_code.should.equal(400)
     r.data.should.equal('Expected 1 file, received 0 files.')
 
 
 def test_post_one():
-    s = client()
+    s = fresh_client()
 
     restore = False
     if hasattr(app, 'mongo_coll'):
@@ -132,7 +132,7 @@ def test_post_one():
 
 
 def test_post_one_exists():
-    s = client()
+    s = fresh_client()
 
     fake_data = {'md5': 'd41d8cd98f00b204e9800998ecf8427e',
                  'shortcode': 'some_shortcode',
@@ -162,7 +162,7 @@ def test_post_one_exists():
 
 
 def test_post_one_malformed():
-    s = client()
+    s = fresh_client()
     data = {'save': (StringIO('not a save file'), 'tpp.sav')}
     r = s.post('/', data=data)
     r.status_code.should.equal(400)
@@ -170,7 +170,7 @@ def test_post_one_malformed():
 
 
 def test_post_two():
-    s = client()
+    s = fresh_client()
     files = {'save1': (StringIO('one save file'), 'file.sav'),
              'save2': (StringIO('another save file'), 'file.sav')}
     r = s.post('/', data=files)
@@ -179,7 +179,7 @@ def test_post_two():
 
 
 def test_get_team():
-    s = client()
+    s = fresh_client()
 
     with open('test_save.sav', 'rb') as f:
         save_data_zlib = zlib.compress(f.read())
