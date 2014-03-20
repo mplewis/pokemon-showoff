@@ -164,7 +164,7 @@ def test_post_one_exists():
         key, val = header
         headers[key] = val
     headers.should.have.key('Location')
-    headers['Location'].endswith('/some_shortcode').should.be.ok
+    headers['Location'].endswith('/some_shortcode').should.be.true
     fake_coll.last_find_query.should.equal({'md5': md5})
 
     if restore:
