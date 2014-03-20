@@ -39,6 +39,31 @@ class FakeMongoFindResults:
         return self.num_results
 
 
+class FakeMongoCollWithData:
+    def __init__(self, results):
+        self.storage = {}
+        self.results = results
+
+    def insert(self, item):
+        self.last_inserted = item
+        pass
+
+    def find(self, query):
+        self.last_find_query = query
+        return FakeMongoFindResultsWithData(self.results)
+
+
+class FakeMongoFindResultsWithData:
+    def __init__(self, results):
+        self.results = results
+
+    def count(self):
+        return len(self.results)
+
+    def __getitem__(self, pos):
+        return self.results[pos]
+
+
 @pytest.fixture
 def client():
     from app import app, config_app
@@ -116,7 +141,10 @@ def test_post_one_exists():
         restore = True
         old_coll = app.mongo_coll
 
-    fake_coll = FakeMongoColl(1)
+    fake_data = {'md5': 'd41d8cd98f00b204e9800998ecf8427e',
+                 'shortcode': 'some_shortcode',
+                 'save_data_zlib': None}
+    fake_coll = FakeMongoCollWithData([fake_data])
     app.mongo_coll = fake_coll
 
     with open('test_save.sav', 'rb') as f:
@@ -130,8 +158,13 @@ def test_post_one_exists():
         data = {'save': (f, 'tpp.sav')}
         r = s.post('/', data=data)
 
-    r.data.should.equal('Save file already exists')
-    r.status_code.should.equal(400)
+    r.status_code.should.equal(302)
+    headers = {}
+    for header in r.headers:
+        key, val = header
+        headers[key] = val
+    headers.should.have.key('Location')
+    headers['Location'].endswith('/some_shortcode').should.be.ok
     fake_coll.last_find_query.should.equal({'md5': md5})
 
     if restore:

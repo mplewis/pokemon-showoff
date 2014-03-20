@@ -4,7 +4,7 @@ from app import app
 
 import zlib
 import hashlib
-from flask import render_template, request
+from flask import render_template, request, redirect
 from bson.binary import Binary
 
 
@@ -34,8 +34,10 @@ def upload_save():
 
     compressed = zlib.compress(upload_data)
 
-    if app.mongo_coll.find({'md5': md5}).count() > 0:
-        return 'Save file already exists', 400
+    existing = app.mongo_coll.find({'md5': md5})
+    if existing.count() > 0:
+        existing_shortcode = existing[0]['shortcode']
+        return redirect('/' + existing_shortcode)
 
     storable = {'md5': md5,
                 'shortcode': shortcode(app.misc_config.SHORTCODE_LEN),
