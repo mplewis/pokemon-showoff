@@ -10,6 +10,13 @@ def config_app(flask_config=None, mongo_db_config=None, mongo_coll_obj=None,
     if flask_config:
         app.config.from_object(flask_config)
 
+    if hasattr(app, 'mongo_client'):
+        delattr(app, 'mongo_client')
+    if hasattr(app, 'mongo_db'):
+        delattr(app, 'mongo_db')
+    if hasattr(app, 'mongo_coll'):
+        delattr(app, 'mongo_coll')
+
     if mongo_db_config and mongo_coll_obj:
         raise ValueError('Cannot pass in both mongo_db_config and '
                          'mongo_coll_obj')

@@ -1,4 +1,6 @@
 from utils import shortcode
+from app import app, config_app
+from views import index, upload_save  # noqa
 
 import pytest
 import sure  # noqa
@@ -66,16 +68,12 @@ class FakeMongoFindResultsWithData:
 
 @pytest.fixture
 def client():
-    from app import app, config_app
-    from views import index, upload_save  # noqa
     config_app(flask_config=FlaskTestConfig, misc_config=MiscConfig)
     return app.test_client()
 
 
 @pytest.fixture
 def client_and_app():
-    from app import app, config_app
-    from views import index, upload_save  # noqa
     config_app(flask_config=FlaskTestConfig, misc_config=MiscConfig)
     return (app.test_client(), app)
 
@@ -143,11 +141,6 @@ def test_post_one():
 def test_post_one_exists():
     s, app = client_and_app()
 
-    restore = False
-    if hasattr(app, 'mongo_coll'):
-        restore = True
-        old_coll = app.mongo_coll
-
     fake_data = {'md5': 'd41d8cd98f00b204e9800998ecf8427e',
                  'shortcode': 'some_shortcode',
                  'save_data_zlib': None}
@@ -173,9 +166,6 @@ def test_post_one_exists():
     headers.should.have.key('Location')
     headers['Location'].endswith('/some_shortcode').should.be.true
     fake_coll.last_find_query.should.equal({'md5': md5})
-
-    if restore:
-        app.mongo_coll = old_coll
 
 
 def test_post_one_malformed():
