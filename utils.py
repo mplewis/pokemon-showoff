@@ -17,7 +17,7 @@ def unmulti(data):
 def shortcode(length=12, start_with_vowel=False):
     code = ''
     vowels = 'aeiou'
-    consonants = 'bcdfghjklmnpqrstvexyz'
+    consonants = 'bcdfghjklmnpqrstvwxyz'
     vowel = start_with_vowel
     while length > 0:
         if vowel:

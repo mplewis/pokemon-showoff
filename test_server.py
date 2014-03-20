@@ -190,7 +190,7 @@ def test_post_two():
 
 def test_shortcode():
     vowels = 'aeiou'
-    consonants = 'bcdfghjklmnpqrstvexyz'
+    consonants = 'bcdfghjklmnpqrstvwxyz'
     c = shortcode(length=10)
     c.should.have.length_of(10)
     for letter in c[::2]:
