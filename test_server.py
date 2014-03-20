@@ -132,6 +132,8 @@ def test_post_one():
     (inserted.should.have.key('save_data_zlib')
      .with_value.being.equal(stored['save_data_zlib']))
     inserted.should.have.key('shortcode')
+    inserted.should.have.key('created')
+    inserted['created'].should.be.a('datetime.datetime')
     inserted['shortcode'].should.have.length_of(MiscConfig.SHORTCODE_LEN)
 
     if restore:

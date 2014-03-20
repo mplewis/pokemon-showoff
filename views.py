@@ -6,6 +6,7 @@ import zlib
 import hashlib
 from flask import render_template, request, redirect
 from bson.binary import Binary
+from datetime import datetime
 
 
 @app.route('/', methods=['GET'])
@@ -42,7 +43,8 @@ def upload_save():
     stored_shortcode = shortcode(app.misc_config.SHORTCODE_LEN)
     storable = {'md5': md5,
                 'shortcode': stored_shortcode,
-                'save_data_zlib': Binary(compressed)}
+                'save_data_zlib': Binary(compressed),
+                'created': datetime.now()}
     app.mongo_coll.insert(storable)
 
     return redirect('/' + stored_shortcode)
