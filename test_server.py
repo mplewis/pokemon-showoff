@@ -2,7 +2,6 @@ from utils import shortcode
 from app import app, config_app
 from views import index, upload_save  # noqa
 
-import pytest
 import sure  # noqa
 import hashlib
 import zlib
