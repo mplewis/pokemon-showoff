@@ -39,9 +39,10 @@ def upload_save():
         existing_shortcode = existing[0]['shortcode']
         return redirect('/' + existing_shortcode)
 
+    stored_shortcode = shortcode(app.misc_config.SHORTCODE_LEN)
     storable = {'md5': md5,
-                'shortcode': shortcode(app.misc_config.SHORTCODE_LEN),
+                'shortcode': stored_shortcode,
                 'save_data_zlib': Binary(compressed)}
     app.mongo_coll.insert(storable)
 
-    return md5
+    return redirect('/' + stored_shortcode)

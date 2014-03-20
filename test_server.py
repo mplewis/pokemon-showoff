@@ -119,8 +119,13 @@ def test_post_one():
 
     stored = {'md5': md5, 'save_data_zlib': Binary(compressed)}
 
-    r.data.should.equal(md5)
-    r.status_code.should.equal(200)
+    r.status_code.should.equal(302)
+    headers = {}
+    for header in r.headers:
+        key, val = header
+        headers[key] = val
+    headers.should.have.key('Location')
+
     fake_coll.last_find_query.should.equal({'md5': md5})
     inserted = fake_coll.last_inserted
     inserted.should.have.key('md5').with_value.being.equal(stored['md5'])
