@@ -93,7 +93,11 @@ def test_post_one():
     r.data.should.equal(md5)
     r.status_code.should.equal(200)
     fake_coll.last_find_query.should.equal({'md5': md5})
-    fake_coll.last_inserted.should.equal(stored)
+    inserted = fake_coll.last_inserted
+    inserted.should.have.key('md5').with_value.being.equal(stored['md5'])
+    (inserted.should.have.key('save_data_zlib')
+     .with_value.being.equal(stored['save_data_zlib']))
+    inserted.should.have.key('shortcode')
 
     if restore:
         app.mongo_coll = old_coll

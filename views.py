@@ -4,7 +4,7 @@ import zlib
 import hashlib
 from flask import render_template, request
 from app import app
-from utils import unmulti
+from utils import unmulti, shortcode
 from bson.binary import Binary
 
 
@@ -37,7 +37,8 @@ def upload_save():
     if app.mongo_coll.find({'md5': md5}).count() > 0:
         return 'Save file already exists', 400
 
-    storable = {'md5': md5, 'save_data_zlib': Binary(compressed)}
+    storable = {'md5': md5, 'shortcode': shortcode(12),
+                'save_data_zlib': Binary(compressed)}
     app.mongo_coll.insert(storable)
 
     return md5
