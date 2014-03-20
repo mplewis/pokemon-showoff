@@ -1,3 +1,5 @@
+from utils import shortcode
+
 import pytest
 import sure  # noqa
 import hashlib
@@ -142,3 +144,14 @@ def test_post_two():
     r = s.post('/', data=files)
     r.status_code.should.equal(400)
     r.data.should.equal('Expected 1 file, received 2 files.')
+
+
+def test_shortcode():
+    vowels = 'aeiou'
+    consonants = 'bcdfghjklmnpqrstvexyz'
+    c = shortcode(length=10)
+    print c
+    for letter in c[::2]:
+        letter.should.be.within(consonants)
+    for letter in c[1::2]:
+        letter.should.be.within(vowels)
